@@ -1,0 +1,769 @@
+from typing import List
+
+
+# Class: Ebook
+class Ebook:
+    """
+        Represents an individual ebook with details such as title, author, genre, and availability.
+
+        This class has a simple association relationship with `EbookStore` and `ShoppingCart`.
+        Multiple `Ebook` instances can belong to a single `EbookStore` or `ShoppingCart`.
+        Multiplicity: 1..* (one store/cart can have many ebooks).
+        """
+    def __init__(self, title: str, author: str, publications: str, price: float, genre: str, isbn: str, availability: bool):
+        self.title = title
+        self.author = author
+        self.publications = publications
+        self.price = price
+        self.genre = genre
+        self.isbn = isbn
+        self.availability = availability
+
+    def add_ebook(self):
+        print(f"Ebook '{self.title}' by {self.author} has been added.")
+
+    def remove_ebook(self):
+        print(f"Ebook '{self.title}' has been removed.")
+
+    def search_ebook(self, search_term: str):
+        if search_term.lower() in self.title.lower():
+            print(f"Ebook '{self.title}' matches the search term '{search_term}'.")
+            return self
+        print(f"No match found for '{search_term}' in Ebook '{self.title}'.")
+        return None
+
+    # Getters and Setters
+    def get_title(self) -> str:
+        return self.title
+
+    def set_title(self, title: str) -> None:
+        self.title = title
+
+    def get_author(self) -> str:
+        return self.author
+
+    def set_author(self, author: str) -> None:
+        self.author = author
+
+    def get_publications(self) -> str:
+        return self.publications
+
+    def set_publications(self, publications: str) -> None:
+        self.publications = publications
+
+    def get_price(self) -> float:
+        return self.price
+
+    def set_price(self, price: float) -> None:
+        self.price = price
+
+    def get_genre(self) -> str:
+        return self.genre
+
+    def set_genre(self, genre: str) -> None:
+        self.genre = genre
+
+    def get_isbn(self) -> str:
+        return self.isbn
+
+    def set_isbn(self, isbn: str) -> None:
+        self.isbn = isbn
+
+    def is_availability(self) -> bool:
+        return self.availability
+
+    def set_availability(self, availability: bool) -> None:
+        self.availability = availability
+
+    def __str__(self) -> str:
+        return (f"Ebook(title={self.title}, author={self.author}, publications={self.publications}, "
+                f"price={self.price}, genre={self.genre}, ISBN={self.isbn}, availability={self.availability})")
+
+# Class: EbookStore
+class EbookStore:
+    """
+       Represents an ebook store containing a collection of ebooks.
+
+       Aggregation Relationship:
+       - `EbookStore` contains a collection of `Ebook` objects (self.ebooks_list).
+       - The `Ebook` objects exist independently of the store.
+       - Multiplicity: 1..* (one store has many ebooks).
+
+       """
+    def __init__(self, storename: str, storeaddress: str, storephonenumber: str, storeemail: str, storewebsite: str):
+        self.ebooks_list: List[Ebook] = []
+        self.storename = storename
+        self.storeaddress = storeaddress
+        self.storephonenumber = storephonenumber
+        self.storeemail = storeemail
+        self.storewebsite = storewebsite
+
+    # Methods to add and remove Ebooks from the store
+    def add_ebook(self, ebook: Ebook):
+        self.ebooks_list.append(ebook)
+        print(f"Ebook '{ebook.title}' has been added to the store.")
+
+    def remove_ebook(self, ebook: Ebook):
+        if ebook in self.ebooks_list:
+            self.ebooks_list.remove(ebook)
+            print(f"Ebook '{ebook.title}' has been removed from the store.")
+        else:
+            print(f"Ebook '{ebook.title}' not found in the store.")
+
+    # Getters and Setters
+    def get_storename(self) -> str:
+        return self.storename
+
+    def set_storename(self, storename: str) -> None:
+        self.storename = storename
+
+    def get_storeaddress(self) -> str:
+        return self.storeaddress
+
+    def set_storeaddress(self, storeaddress: str) -> None:
+        self.storeaddress = storeaddress
+
+    def get_storephonenumber(self) -> str:
+        return self.storephonenumber
+
+    def set_storephonenumber(self, storephonenumber: str) -> None:
+        self.storephonenumber = storephonenumber
+
+    def get_storeemail(self) -> str:
+        return self.storeemail
+
+    def set_storeemail(self, storeemail: str) -> None:
+        self.storeemail = storeemail
+
+    def get_storewebsite(self) -> str:
+        return self.storewebsite
+
+    def set_storewebsite(self, storewebsite: str) -> None:
+        self.storewebsite = storewebsite
+
+    def __str__(self) -> str:
+        ebooks_str = ', '.join(str(ebook) for ebook in self.ebooks_list)
+        return (f"EbookStore(storename={self.storename}, storeaddress={self.storeaddress}, "
+                f"storephonenumber={self.storephonenumber}, storeemail={self.storeemail}, "
+                f"storewebsite={self.storewebsite}, ebooks=[{ebooks_str}])")
+
+
+# Class: ShoppingCart
+class ShoppingCart:
+    """
+        Represents a user's shopping cart containing ebooks.
+
+        Composition Relationship:
+        - The `ShoppingCart` contains `Ebook` objects (self.ebooks_list).
+        - If the cart is deleted, the ebooks within it are logically removed from the cart's perspective.
+        - Multiplicity: 1..* (one cart can have many ebooks).
+
+        Binary Association:
+        - Associated with `Order` as a part of the order process.
+        """
+    def __init__(self, creation_date: str, last_update: str, cart_status: str):
+        self.ebooks_list: List[Ebook] = []
+        self.total_amount = 0.0
+        self.creation_date = creation_date
+        self.last_update = last_update
+        self.cart_status = cart_status
+
+    # Methods
+    def add_item(self, ebook: Ebook):
+        self.ebooks_list.append(ebook)
+        self.calculate_total()
+        print(f"Added '{ebook.title}' to the shopping cart.")
+
+    def remove_item(self, ebook: Ebook):
+        if ebook in self.ebooks_list:
+            self.ebooks_list.remove(ebook)
+            self.calculate_total()
+            print(f"Removed '{ebook.title}' from the shopping cart.")
+        else:
+            print(f"'{ebook.title}' not found in the shopping cart.")
+
+    def calculate_total(self):
+        self.total_amount = sum(ebook.price for ebook in self.ebooks_list)
+        print(f"Total amount updated: {self.total_amount}")
+
+    # Getters and Setters
+    def get_items(self) -> List[Ebook]:
+        return self.ebooks_list
+
+    def set_items(self, items: List[Ebook]) -> None:
+        self.ebooks_list = items
+        self.calculate_total()
+
+    def get_total_amount(self) -> float:
+        return self.total_amount
+
+    def set_total_amount(self, amount: float) -> None:
+        self.total_amount = amount
+
+    def get_creation_date(self) -> str:
+        return self.creation_date
+
+    def set_creation_date(self, date: str) -> None:
+        self.creation_date = date
+
+    def get_last_update(self) -> str:
+        return self.last_update
+
+    def set_last_update(self, update: str) -> None:
+        self.last_update = update
+
+    def get_cart_status(self) -> str:
+        return self.cart_status
+
+    def set_cart_status(self, status: str) -> None:
+        self.cart_status = status
+
+    def __str__(self) -> str:
+        ebooks_str = ', '.join(str(ebook) for ebook in self.ebooks_list)
+        return (f"ShoppingCart(total_amount={self.total_amount}, creation_date={self.creation_date}, "
+                f"last_update={self.last_update}, cart_status={self.cart_status}, ebooks=[{ebooks_str}])")
+
+# Class: Order (Unary Relationship with ShoppingCart)
+class Order:
+    """
+       Represents a customer's order.
+
+       Unary Relationship:
+       - An `Order` is tightly associated with a `ShoppingCart` (self.shopping_cart).
+       - Multiplicity: 1..1 (one order is associated with one cart).
+
+       """
+    def __init__(self, order_id: str, order_date: str, status: str, shopping_cart: ShoppingCart):
+        self.order_id = order_id
+        self.order_date = order_date
+        self.status = status
+        self.shopping_cart = shopping_cart  # Unary relationship with ShoppingCart only
+        self.subtotal = sum(ebook.price for ebook in shopping_cart.ebooks_list)
+        self.discount = 0.0
+        self.vat = 0.0
+        self.total = self.subtotal - self.discount + self.vat  # Initial total calculation
+
+    # Getters and Setters
+    def get_order_id(self) -> str:
+        return self.order_id
+
+    def set_order_id(self, order_id: str) -> None:
+        self.order_id = order_id
+
+    def get_order_date(self) -> str:
+        return self.order_date
+
+    def set_order_date(self, order_date: str) -> None:
+        self.order_date = order_date
+
+    def get_status(self) -> str:
+        return self.status
+
+    def set_status(self, status: str) -> None:
+        self.status = status
+
+    def get_shopping_cart(self) -> ShoppingCart:
+        return self.shopping_cart
+
+    def set_shopping_cart(self, shopping_cart: ShoppingCart) -> None:
+        self.shopping_cart = shopping_cart
+        self.calculate_total()  # Recalculate total when shopping_cart changes
+
+    def get_subtotal(self) -> float:
+        return self.subtotal
+
+    def set_subtotal(self, subtotal: float) -> None:
+        self.subtotal = subtotal
+
+    def get_discount(self) -> float:
+        return self.discount
+
+    def set_discount(self, discount: float) -> None:
+        self.discount = discount
+        self.calculate_total()  # Update total after setting discount
+
+    def get_vat(self) -> float:
+        return self.vat
+
+    def set_vat(self, vat: float) -> None:
+        self.vat = vat
+        self.calculate_total()  # Update total after setting VAT
+
+    def get_total(self) -> float:
+        return self.total
+
+    # Method to calculate the total
+    def calculate_total(self):
+        self.subtotal = sum(ebook.price for ebook in self.shopping_cart.ebooks_list)
+        self.total = self.subtotal - self.discount + self.vat
+
+    # Calculate subtotal based on the shopping cart items
+    def CalculateSubtotal(self) -> None:
+        self.subtotal = sum(ebook.price for ebook in self.shopping_cart.ebooks_list)
+
+    # Apply discount to the order
+    def applyDiscount(self, discount_amount: float) -> None:
+        self.discount = discount_amount
+        self.calculate_total()
+
+    # Generate a string representation of the invoice
+    def generateInvoice(self) -> str:
+        invoice_details = (
+            f"Invoice for Order ID: {self.order_id}\n"
+            f"Order Date: {self.order_date}\n"
+            f"Status: {self.status}\n"
+            f"Subtotal: ${self.subtotal:.2f}\n"
+            f"Discount: -${self.discount:.2f}\n"
+            f"VAT: +${self.vat:.2f}\n"
+            f"Total: ${self.total:.2f}\n"
+        )
+        return invoice_details
+
+    def __str__(self) -> str:
+        return (f"Order(order_id={self.order_id}, order_date={self.order_date}, status={self.status}, "
+                f"subtotal={self.subtotal}, discount={self.discount}, vat={self.vat}, total={self.total}, "
+                f"shopping_cart=[{self.shopping_cart}])")
+
+class Customer:
+    """
+        Represents a customer.
+
+        Association Relationship:
+        - A `Customer` is associated with multiple `Order` objects (self.order_history).
+        - Multiplicity: 1..* (one customer can have many orders).
+
+        """
+    def __init__(self, full_name: str, contact_details: str, is_member: bool, residence: str,
+                 account_credit: float, membership_start_date: str):
+        self.full_name = full_name
+        self.contact_details = contact_details
+        self.is_member = is_member
+        self.residence = residence
+        self.order_history = []  # List of Order objects (1..* relationship)
+        self.account_credit = account_credit
+        self.membership_start_date = membership_start_date
+
+    # Methods to create and update account
+    def createAccount(self, full_name: str, contact_details: str, residence: str):
+        self.full_name = full_name
+        self.contact_details = contact_details
+        self.residence = residence
+        print(f"Account created for {self.full_name}.")
+
+    def updateContactInfo(self, new_contact_details: str):
+        self.contact_details = new_contact_details
+        print(f"Contact details updated for {self.full_name}.")
+
+    # Toggle membership
+    def toggleLoyaltyMembership(self):
+        self.is_member = not self.is_member
+        membership_status = "active" if self.is_member else "inactive"
+        print(f"Loyalty membership for {self.full_name} is now {membership_status}.")
+
+    # Getters and setters for attributes
+    def getName(self) -> str:
+        return self.full_name
+
+    def setName(self, name: str):
+        self.full_name = name
+
+    def getContactInformation(self) -> str:
+        return self.contact_details
+
+    def setContactInformation(self, contact_details: str):
+        self.contact_details = contact_details
+
+    def getAddress(self) -> str:
+        return self.residence
+
+    def setAddress(self, address: str):
+        self.residence = address
+
+    def getAccountBalance(self) -> float:
+        return self.account_credit
+
+    def setAccountBalance(self, balance: float):
+        self.account_credit = balance
+
+    def getJoinDate(self) -> str:
+        return self.membership_start_date
+
+    def setJoinDate(self, join_date: str):
+        self.membership_start_date = join_date
+
+    def isLoyaltyMember(self) -> bool:
+        return self.is_member
+
+    def setLoyaltyMember(self, is_member: bool):
+        self.is_member = is_member
+
+    # Manage orders
+    def addOrder(self, order: Order):
+        self.order_history.append(order)
+        print(f"Order {order.order_id} added to the history of {self.full_name}.")
+
+    def getOrderHistory(self):
+        return self.order_history
+
+    # String representation
+    def __str__(self):
+        order_ids = [order.order_id for order in self.order_history]
+        return (f"Customer(full_name={self.full_name}, contact_details={self.contact_details}, "
+                f"is_member={self.is_member}, residence={self.residence}, "
+                f"account_credit={self.account_credit}, membership_start_date={self.membership_start_date}, "
+                f"order_history={order_ids})")
+
+class Invoice:
+    """
+      Represents an invoice for an order.
+
+      Composition Relationship:
+      - An `Invoice` is composed of an `Order` (self.order).
+      - If the invoice is deleted, the order is still maintained independently.
+      - Multiplicity: 1..1 (one invoice is for one order).
+
+      """
+    def __init__(self, invoice_id: str, invoice_date: str, customer_name: str, order: Order):
+        self.invoice_id = invoice_id
+        self.invoice_date = invoice_date
+        self.customer_name = customer_name
+        self.order = order  # Associated Order
+        self.subtotal = order.get_subtotal()
+        self.discount = order.discount
+        self.vat = order.vat
+        self.total = order.get_total()
+
+    # Getters
+    def getInvoiceId(self) -> str:
+        return self.invoice_id
+
+    def getInvoiceDate(self) -> str:
+        return self.invoice_date
+
+    def getCustomerName(self) -> str:
+        return self.customer_name
+
+    def getSubtotal(self) -> float:
+        return self.subtotal
+
+    def getDiscount(self) -> float:
+        return self.discount
+
+    def getVat(self) -> float:
+        return self.vat
+
+    def getTotal(self) -> float:
+        return self.total
+
+    # Setters
+    def setInvoiceId(self, invoice_id: str):
+        self.invoice_id = invoice_id
+
+    def setInvoiceDate(self, invoice_date: str):
+        self.invoice_date = invoice_date
+
+    def setCustomerName(self, customer_name: str):
+        self.customer_name = customer_name
+
+    def setSubtotal(self, subtotal: float):
+        self.subtotal = subtotal
+
+    def setDiscount(self, discount: float):
+        self.discount = discount
+
+    def setVat(self, vat: float):
+        self.vat = vat
+
+    def setTotal(self, total: float):
+        self.total = total
+
+    # Apply VAT
+    def applyVat(self, vat_percentage: float):
+        self.vat = (self.subtotal - self.discount) * (vat_percentage / 100)
+        self.calculateTotal()
+
+    # Finalize the invoice
+    def finalizeInvoice(self):
+        self.subtotal = self.order.get_subtotal()
+        self.discount = self.order.discount
+        self.vat = self.order.vat
+        self.total = self.order.get_total()
+
+    # Calculate the total amount
+    def calculateTotal(self):
+        self.total = self.subtotal - self.discount + self.vat
+
+    # Generate detailed invoice
+    def generateInvoiceDetails(self) -> str:
+        return (
+            f"Invoice ID: {self.invoice_id}\n"
+            f"Invoice Date: {self.invoice_date}\n"
+            f"Customer Name: {self.customer_name}\n"
+            f"Order Details:\n"
+            f"  Subtotal: ${self.subtotal:.2f}\n"
+            f"  Discount: -${self.discount:.2f}\n"
+            f"  VAT: +${self.vat:.2f}\n"
+            f"  Total: ${self.total:.2f}\n"
+        )
+
+    # String representation for debugging
+    def __str__(self):
+        return (f"Invoice(invoice_id={self.invoice_id}, invoice_date={self.invoice_date}, "
+                f"customer_name={self.customer_name}, subtotal={self.subtotal}, "
+                f"discount={self.discount}, vat={self.vat}, total={self.total})")
+
+class Discount:
+    """
+        Represents a general discount applicable to an order.
+
+        Parent-Child Relationship:
+        - `Discount` is a parent class for specific discount types like `LoyaltyDiscount` and `BulkingDiscount`.
+        """
+    def __init__(self, discount_percentage: float, description: str, is_active: bool, start_date: str, end_date: str):
+        self._discount_percentage = discount_percentage  # Protected attribute
+        self._description = description  # Protected attribute
+        self._is_active = is_active  # Protected attribute
+        self._start_date = start_date  # Protected attribute
+        self._end_date = end_date  # Protected attribute
+
+    # Getters
+    def getDiscountPercentage(self) -> float:
+        return self._discount_percentage
+
+    def getDescription(self) -> str:
+        return self._description
+
+    def getIsActive(self) -> bool:
+        return self._is_active
+
+    def getStartDate(self) -> str:
+        return self._start_date
+
+    def getEndDate(self) -> str:
+        return self._end_date
+
+    # Setters
+    def setDiscountPercentage(self, discount_percentage: float):
+        self._discount_percentage = discount_percentage
+
+    def setDescription(self, description: str):
+        self._description = description
+
+    def setIsActive(self, is_active: bool):
+        self._is_active = is_active
+
+    def setStartDate(self, start_date: str):
+        self._start_date = start_date
+
+    def setEndDate(self, end_date: str):
+        self._end_date = end_date
+
+    # Method to apply the discount
+    def applyDiscount(self, amount: float) -> float:
+        """
+        Applies the discount to the provided amount.
+        """
+        if self._is_active:
+            discount_amount = amount * (self._discount_percentage / 100)
+            return max(amount - discount_amount, 0)  # Ensure the total isn't negative
+        return amount  # If inactive, no discount is applied
+
+    # Method to update the discount percentage
+    def updateDiscountPercentage(self, new_percentage: float):
+        """
+        Updates the discount percentage with a new value.
+        """
+        if new_percentage >= 0:
+            self._discount_percentage = new_percentage
+            print(f"Discount percentage updated to {new_percentage}%")
+        else:
+            print("Invalid discount percentage. It must be non-negative.")
+
+    # Method to activate the discount
+    def activateDiscount(self):
+        """
+        Activates the discount.
+        """
+        self._is_active = True
+        print("Discount is now active.")
+
+    # Method to deactivate the discount
+    def deactivateDiscount(self):
+        """
+        Deactivates the discount.
+        """
+        self._is_active = False
+        print("Discount is now inactive.")
+
+    # Method to check if the discount is valid (active and within date range)
+    def isValid(self, current_date: str) -> bool:
+        """
+        Checks if the discount is valid based on the current date.
+        """
+        if self._is_active and self._start_date <= current_date <= self._end_date:
+            return True
+        return False
+
+    # String representation for debugging
+    def __str__(self):
+        status = "Active" if self._is_active else "Inactive"
+        return (f"Discount(discount_percentage={self._discount_percentage}, description={self._description}, "
+                f"status={status}, start_date={self._start_date}, end_date={self._end_date})")
+
+class LoyaltyDiscount(Discount):
+    """
+        Represents a discount based on loyalty points.
+
+        Inheritance:
+        - Child of `Discount`. Reuses discount logic while adding loyalty-specific attributes and methods.
+        """
+    def __init__(self, loyalty_discount_percentage: float, minimum_points_required: float, bonus_points: int,
+                 description: str, applies_to: str, is_active: bool, start_date: str, end_date: str):
+        super().__init__(loyalty_discount_percentage, description, is_active, start_date, end_date)
+        self._minimum_points_required = minimum_points_required  # Minimum points needed to apply discount
+        self._bonus_points = bonus_points  # Additional points awarded
+        self._applies_to = applies_to  # Category or product it applies to
+
+    # Getters
+    def getLoyaltyDiscountPercentage(self) -> float:
+        return self._discount_percentage
+
+    def getMinimumPointsRequired(self) -> float:
+        return self._minimum_points_required
+
+    def getBonusPoints(self) -> int:
+        return self._bonus_points
+
+    def getDescription(self) -> str:
+        return self._description
+
+    def getAppliesTo(self) -> str:
+        return self._applies_to
+
+    # Setters
+    def setLoyaltyDiscountPercentage(self, discount_percentage: float):
+        self._discount_percentage = discount_percentage
+
+    def setMinimumPointsRequired(self, points: float):
+        self._minimum_points_required = points
+
+    def setBonusPoints(self, points: int):
+        self._bonus_points = points
+
+    def setDescription(self, description: str):
+        self._description = description
+
+    def setAppliesTo(self, applies_to: str):
+        self._applies_to = applies_to
+
+    # Additional Methods
+    def awardBonusPoints(self, current_points: int) -> int:
+        """
+        Awards bonus points to a user's current points.
+        """
+        print(f"Awarding {self._bonus_points} bonus points.")
+        return current_points + self._bonus_points
+
+    def checkEligibility(self, user_points: float) -> bool:
+        """
+        Checks if a user is eligible for the loyalty discount based on their points.
+        """
+        is_eligible = user_points >= self._minimum_points_required
+        print(f"User eligibility: {'Eligible' if is_eligible else 'Not eligible'}")
+        return is_eligible
+
+    def applyLoyaltyDiscount(self, amount: float, user_points: float) -> float:
+        """
+        Applies the loyalty discount if the user is eligible.
+        """
+        if self.checkEligibility(user_points):
+            discounted_amount = super().applyDiscount(amount)
+            print(f"Loyalty discount applied. Final amount: ${discounted_amount:.2f}")
+            return discounted_amount
+        print("User is not eligible for loyalty discount.")
+        return amount
+
+    # String representation for debugging
+    def __str__(self):
+        return (f"LoyaltyDiscount(loyalty_discount_percentage={self._discount_percentage}, "
+                f"minimum_points_required={self._minimum_points_required}, bonus_points={self._bonus_points}, "
+                f"description={self._description}, applies_to={self._applies_to}, "
+                f"is_active={self._is_active}, start_date={self._start_date}, end_date={self._end_date})")
+
+
+class BulkingDiscount(Discount):
+    """
+        Represents a discount for bulk purchases.
+
+        Inheritance:
+        - Child of `Discount`. Reuses discount logic while adding bulk-specific attributes and methods.
+        """
+    def __init__(self, bulk_discount_percentage: float, minimum_item_required: int, maximum_discount_amount: float,
+                 description: str, applies_to: str, is_active: bool, start_date: str, end_date: str):
+        super().__init__(bulk_discount_percentage, description, is_active, start_date, end_date)
+        self._minimum_item_required = minimum_item_required  # Minimum items required for the discount
+        self._maximum_discount_amount = maximum_discount_amount  # Cap on discount
+        self._applies_to = applies_to  # Category or product it applies to
+
+    # Getters
+    def getBulkDiscountPercentage(self) -> float:
+        return self._discount_percentage
+
+    def getMinimumItemRequired(self) -> int:
+        return self._minimum_item_required
+
+    def getMaximumDiscountAmount(self) -> float:
+        return self._maximum_discount_amount
+
+    def getDescription(self) -> str:
+        return self._description
+
+    def getAppliesTo(self) -> str:
+        return self._applies_to
+
+    # Setters
+    def setBulkDiscountPercentage(self, discount_percentage: float):
+        self._discount_percentage = discount_percentage
+
+    def setMinimumItemRequired(self, minimum_item: int):
+        self._minimum_item_required = minimum_item
+
+    def setMaximumDiscountAmount(self, max_discount: float):
+        self._maximum_discount_amount = max_discount
+
+    def setDescription(self, description: str):
+        self._description = description
+
+    def setAppliesTo(self, applies_to: str):
+        self._applies_to = applies_to
+
+    # Additional Methods
+    def capDiscountAmount(self, total_discount: float) -> float:
+        """
+        Caps the discount amount to the maximum allowed.
+        """
+        capped_discount = min(total_discount, self._maximum_discount_amount)
+        print(f"Capping discount: Final discount is ${capped_discount:.2f}")
+        return capped_discount
+
+    def applyBulkingDiscount(self, amount: float, items: int) -> float:
+        """
+        Applies the bulk discount if the minimum item requirement is met.
+        """
+        if items >= self._minimum_item_required:
+            total_discount = super().applyDiscount(amount)
+            final_discounted_amount = self.capDiscountAmount(total_discount)
+            print(f"Bulk discount applied. Final amount: ${final_discounted_amount:.2f}")
+            return final_discounted_amount
+        print(f"Not enough items to apply bulk discount. Minimum required: {self._minimum_item_required}")
+        return amount
+
+    # String representation for debugging
+    def __str__(self):
+        return (f"BulkingDiscount(bulk_discount_percentage={self._discount_percentage}, "
+                f"minimum_item_required={self._minimum_item_required}, maximum_discount_amount={self._maximum_discount_amount}, "
+                f"description={self._description}, applies_to={self._applies_to}, "
+                f"is_active={self._is_active}, start_date={self._start_date}, end_date={self._end_date})")
+
+
+
