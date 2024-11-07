@@ -1,0 +1,372 @@
+from Ass2Code import *
+
+
+# Step 1: Create and test Ebook objects
+ebook1 = Ebook("Python Programming", "Abdullah Moh", "TechPress", 29.99, "Programming", "1234567890", True)
+ebook2 = Ebook("Advanced Networking", "Hazza SUltan", "NetBooks", 45.00, "Networking", "0987654321", True)
+ebook3 = Ebook("Data Science Essentials", "Afhsan parker", "DataBooks", 39.95, "Data Science", "1122334455", True)
+
+# Test setters and getters
+ebook1.set_price(35.99)
+assert ebook1.get_price() == 35.99
+
+# Test search functionality
+assert ebook1.search_ebook("python") is not None
+
+# Step 2: Create an EbookStore and add/remove Ebooks
+ebook_store = EbookStore("Tech Bookstore", "123 Tech Street", "123-456-7890", "support@techbooks.com", "techbooks.com")
+ebook_store.add_ebook(ebook1)
+ebook_store.add_ebook(ebook2)
+ebook_store.add_ebook(ebook3)
+ebook_store.remove_ebook(ebook2)
+assert len(ebook_store.ebooks_list) == 2
+
+# Step 3: Create a ShoppingCart and add/remove items
+shopping_cart = ShoppingCart("2024-11-01", "2024-11-06", "Active")
+shopping_cart.add_item(ebook1)
+shopping_cart.add_item(ebook3)
+shopping_cart.remove_item(ebook3)
+assert shopping_cart.get_total_amount() == ebook1.get_price()
+
+# Step 4: Create an Order and apply discounts
+order = Order("ORD001", "2024-11-06", "Pending", shopping_cart)
+order.applyDiscount(5.00)
+order.set_vat(2.00)
+assert order.total == order.subtotal - 5.00 + 2.00
+
+# Step 5: Create a Customer and add orders
+customer = Customer("Abdullah Moh", "Abdullah123@example.com", True, "456 Elm Street", 100.0, "2023-01-01")
+customer.addOrder(order)
+assert len(customer.getOrderHistory()) == 1
+
+# Step 6: Apply Discounts
+discount = Discount(10.0, "Seasonal Discount", True, "2024-11-01", "2024-11-30")
+discounted_total = discount.applyDiscount(order.subtotal)
+assert discounted_total == order.subtotal * 0.9
+
+# Step 7: Apply LoyaltyDiscount and BulkingDiscount
+loyalty_discount = LoyaltyDiscount(5.0, 50, 10, "Loyalty Discount", "All Books", True, "2024-01-01", "2024-12-31")
+loyalty_discounted_total = loyalty_discount.applyLoyaltyDiscount(order.subtotal, 100)
+assert loyalty_discounted_total == order.subtotal * 0.95
+
+bulking_discount = BulkingDiscount(15.0, 2, 20.0, "Bulk Purchase Discount", "Programming", True, "2024-01-01", "2024-12-31")
+bulk_discounted_total = bulking_discount.applyBulkingDiscount(order.subtotal, 3)
+assert bulk_discounted_total <= 20.0
+
+# Step 8: Generate Invoice
+invoice = Invoice("INV001", "2024-11-07", customer.full_name, order)
+invoice_details = invoice.generateInvoiceDetails()
+
+# Display results
+test_results = {
+    "EbookStore": len(ebook_store.ebooks_list),  # Number of ebooks in the store
+    "ShoppingCart Total": shopping_cart.get_total_amount(),
+    "Order Total with Discount": order.total,
+    "Customer Orders": len(customer.getOrderHistory()),
+    "Discounted Total (General)": discounted_total,
+    "Loyalty Discounted Total": loyalty_discounted_total,
+    "Bulk Discounted Total": bulk_discounted_total,
+    "Invoice Details": invoice_details,
+}
+
+print(test_results)
+
+# Testing all remaining functions in all classes
+
+# Step 1: Test additional Ebook methods
+ebook1 = Ebook("Python Programming", "Yousif Mohamed", "TechPress", 29.99, "Programming", "1234567890", True)
+
+# Test all setters
+ebook1.set_title("Advanced Python Programming")
+assert ebook1.get_title() == "Advanced Python Programming"
+
+ebook1.set_author("Yousif Mohamed")
+assert ebook1.get_author() == "Yousif Mohamed"
+
+ebook1.set_publications("NewTechPress")
+assert ebook1.get_publications() == "NewTechPress"
+
+ebook1.set_price(39.99)
+assert ebook1.get_price() == 39.99
+
+ebook1.set_genre("Advanced Programming")
+assert ebook1.get_genre() == "Advanced Programming"
+
+ebook1.set_isbn("9876543210")
+assert ebook1.get_isbn() == "9876543210"
+
+ebook1.set_availability(False)
+assert ebook1.is_availability() is False
+
+# Test __str__
+print(str(ebook1))
+
+# Step 2: Test additional EbookStore methods
+ebook_store = EbookStore("Tech Bookstore", "123 Tech Street", "123-456-7890", "support@techbooks.com", "techbooks.com")
+
+# Test all setters
+ebook_store.set_storename("New Tech Bookstore")
+assert ebook_store.get_storename() == "New Tech Bookstore"
+
+ebook_store.set_storeaddress("456 Innovation Blvd")
+assert ebook_store.get_storeaddress() == "456 Innovation Blvd"
+
+ebook_store.set_storephonenumber("789-456-1230")
+assert ebook_store.get_storephonenumber() == "789-456-1230"
+
+ebook_store.set_storeemail("contact@newtechbooks.com")
+assert ebook_store.get_storeemail() == "contact@newtechbooks.com"
+
+ebook_store.set_storewebsite("newtechbooks.com")
+assert ebook_store.get_storewebsite() == "newtechbooks.com"
+
+# Add and remove ebooks
+ebook_store.add_ebook(ebook1)
+ebook_store.add_ebook(Ebook("Networking Basics", "Leen Rashid", "TechBooks", 25.00, "Networking", "1122334455", True))
+ebook_store.remove_ebook(ebook1)
+
+# Test __str__
+print(str(ebook_store))
+
+# Step 3: Test additional ShoppingCart methods
+shopping_cart = ShoppingCart("2024-11-01", "2024-11-06", "Active")
+
+# Add and remove items
+ebook2 = Ebook("Networking Basics", "Jane Doe", "TechBooks", 25.00, "Networking", "1122334455", True)
+shopping_cart.add_item(ebook1)
+shopping_cart.add_item(ebook2)
+shopping_cart.remove_item(ebook2)
+
+# Test getters and setters
+shopping_cart.set_cart_status("Inactive")
+assert shopping_cart.get_cart_status() == "Inactive"
+
+shopping_cart.set_creation_date("2024-10-30")
+assert shopping_cart.get_creation_date() == "2024-10-30"
+
+shopping_cart.set_last_update("2024-11-01")
+assert shopping_cart.get_last_update() == "2024-11-01"
+
+# Test __str__
+print(str(shopping_cart))
+
+# Step 4: Test additional Order methods
+order = Order("ORD001", "2024-11-06", "Pending", shopping_cart)
+
+# Test setters
+order.set_order_id("ORD002")
+assert order.get_order_id() == "ORD002"
+
+order.set_order_date("2024-12-01")
+assert order.get_order_date() == "2024-12-01"
+
+order.set_status("Completed")
+assert order.get_status() == "Completed"
+
+order.set_discount(10.0)
+order.set_vat(5.0)
+order.calculate_total()
+assert order.get_total() == order.subtotal - 10.0 + 5.0
+
+# Test __str__
+print(str(order))
+
+# Step 5: Test additional Customer methods
+customer = Customer("Ahmed Jalal", "AJ999@example.com", True, "456 Elm Street", 100.0, "2023-01-01")
+customer.addOrder(order)
+
+# Test all setters
+customer.setName("Ahmed Jalal")
+assert customer.getName() == "Ahmed Jalal"
+
+customer.setContactInformation("AJ999@example.com")
+assert customer.getContactInformation() == "AJ999@example.com"
+
+customer.setAddress("789 Maple Drive")
+assert customer.getAddress() == "789 Maple Drive"
+
+customer.setAccountBalance(150.0)
+assert customer.getAccountBalance() == 150.0
+
+customer.setJoinDate("2024-01-15")
+assert customer.getJoinDate() == "2024-01-15"
+
+customer.toggleLoyaltyMembership()
+assert not customer.isLoyaltyMember()
+
+# Test __str__
+print(str(customer))
+
+# Step 6: Test remaining Discount methods
+discount = Discount(10.0, "Seasonal Discount", True, "2024-11-01", "2024-11-30")
+
+# Test setters
+discount.setDiscountPercentage(15.0)
+assert discount.getDiscountPercentage() == 15.0
+
+discount.setDescription("Winter Discount")
+assert discount.getDescription() == "Winter Discount"
+
+discount.setIsActive(False)
+assert discount.getIsActive() is False
+
+discount.activateDiscount()
+assert discount.getIsActive() is True
+
+discount.setStartDate("2024-12-01")
+discount.setEndDate("2025-01-01")
+assert discount.isValid("2024-12-15") is True
+
+# Test __str__
+print(str(discount))
+
+# Step 7: Test remaining LoyaltyDiscount methods
+loyalty_discount = LoyaltyDiscount(5.0, 50, 10, "Loyalty Discount", "All Books", True, "2024-01-01", "2024-12-31")
+assert loyalty_discount.checkEligibility(100) is True
+
+loyalty_discount.setBonusPoints(15)
+assert loyalty_discount.getBonusPoints() == 15
+
+# Test __str__
+print(str(loyalty_discount))
+
+# Step 8: Test remaining BulkingDiscount methods
+bulking_discount = BulkingDiscount(15.0, 3, 20.0, "Bulk Purchase Discount", "Programming", True, "2024-01-01", "2024-12-31")
+bulk_discounted_total = bulking_discount.applyBulkingDiscount(100.0, 5)
+assert bulk_discounted_total <= 20.0
+
+# Test __str__
+print(str(bulking_discount))
+
+# Step 9: Test remaining Invoice methods
+invoice = Invoice("INV001", "2024-11-07", customer.full_name, order)
+invoice.setInvoiceId("INV002")
+assert invoice.getInvoiceId() == "INV002"
+
+invoice.setSubtotal(200.0)
+assert invoice.getSubtotal() == 200.0
+
+invoice.setDiscount(20.0)
+invoice.setVat(10.0)
+invoice.calculateTotal()
+assert invoice.getTotal() == 200.0 - 20.0 + 10.0
+
+# Finalize and generate invoice details
+invoice.finalizeInvoice()
+print(invoice.generateInvoiceDetails())
+
+# Final summary
+print("All tests completed successfully!")
+# Test all classes and methods
+
+# Test Ebook class
+ebook1 = Ebook("Python Programming", "Mansour Juma", "TechPress", 29.99, "Programming", "1234567890", True)
+ebook2 = Ebook("Advanced Networking", "Saeed Khlifa", "NetBooks", 45.00, "Networking", "0987654321", True)
+ebook3 = Ebook("Data Science Essentials", "Mohamed Taj", "DataBooks", 39.95, "Data Science", "1122334455", True)
+
+# Ebook methods and attributes
+ebook1.set_title("Python Mastery")
+assert ebook1.get_title() == "Python Mastery"
+
+ebook1.set_price(34.99)
+assert ebook1.get_price() == 34.99
+
+assert ebook1.search_ebook("python") is not None
+assert ebook2.search_ebook("java") is None
+
+print("Ebook __str__:", str(ebook1))
+
+# Test EbookStore
+ebook_store = EbookStore("Tech Bookstore", "123 Tech Street", "123-456-7890", "support@techbooks.com", "techbooks.com")
+ebook_store.add_ebook(ebook1)
+ebook_store.add_ebook(ebook2)
+ebook_store.remove_ebook(ebook2)
+assert len(ebook_store.ebooks_list) == 1
+
+ebook_store.set_storename("Updated Tech Store")
+assert ebook_store.get_storename() == "Updated Tech Store"
+
+print("EbookStore __str__:", str(ebook_store))
+
+# Test ShoppingCart
+shopping_cart = ShoppingCart("2024-11-01", "2024-11-07", "Active")
+shopping_cart.add_item(ebook1)
+shopping_cart.add_item(ebook3)
+assert shopping_cart.get_total_amount() == 74.94
+
+shopping_cart.remove_item(ebook1)
+assert shopping_cart.get_total_amount() == 39.95
+
+shopping_cart.set_cart_status("Inactive")
+assert shopping_cart.get_cart_status() == "Inactive"
+
+print("ShoppingCart __str__:", str(shopping_cart))
+
+# Test Order
+order = Order("ORD001", "2024-11-08", "Pending", shopping_cart)
+assert order.get_subtotal() == 39.95
+
+order.set_discount(5.00)
+order.set_vat(2.50)
+order.calculate_total()
+assert order.get_total() == 37.45  # 39.95 - 5.00 + 2.50
+
+print("Order __str__:", str(order))
+
+# Test Customer
+customer = Customer("Mansour Juma", "ManJ619@example.com", True, "456 Elm Street", 100.0, "2023-01-01")
+customer.addOrder(order)
+assert len(customer.getOrderHistory()) == 1
+
+customer.setName("Saeed Khlifa")
+assert customer.getName() == "Saeed Khlifa"
+
+print("Customer __str__:", str(customer))
+
+# Test Discount
+discount = Discount(10.0, "Seasonal Discount", True, "2024-11-01", "2024-12-01")
+discounted_total = discount.applyDiscount(order.subtotal)
+assert discounted_total == order.subtotal * 0.9
+
+discount.deactivateDiscount()
+assert discount.applyDiscount(order.subtotal) == order.subtotal  # No discount applied
+
+print("Discount __str__:", str(discount))
+
+# Test LoyaltyDiscount
+loyalty_discount = LoyaltyDiscount(5.0, 50, 10, "Loyalty Points", "All", True, "2024-01-01", "2024-12-31")
+assert loyalty_discount.checkEligibility(100) is True
+assert loyalty_discount.applyLoyaltyDiscount(order.subtotal, 100) == order.subtotal * 0.95
+
+print("LoyaltyDiscount __str__:", str(loyalty_discount))
+
+# Test BulkingDiscount
+bulking_discount = BulkingDiscount(20.0, 3, 15.0, "Bulk Order Discount", "Programming", True, "2024-01-01", "2024-12-31")
+bulk_discounted_total = bulking_discount.applyBulkingDiscount(order.subtotal, 3)
+assert bulk_discounted_total <= 15.0
+
+print("BulkingDiscount __str__:", str(bulking_discount))
+
+# Test Invoice
+invoice = Invoice("INV001", "2024-11-08", customer.getName(), order)
+invoice.setDiscount(5.00)
+invoice.setVat(2.50)
+invoice.calculateTotal()
+assert invoice.getTotal() == invoice.getSubtotal() - 5.00 + 2.50
+
+print("Invoice Details:\n", invoice.generateInvoiceDetails())
+
+# Summary of tests
+print("\n--- Test Summary ---")
+test_summary = {
+    "Ebooks in Store": len(ebook_store.ebooks_list),
+    "Cart Total": shopping_cart.get_total_amount(),
+    "Order Total": order.get_total(),
+    "Customer Orders": len(customer.getOrderHistory()),
+    "Discounted Total (General)": discounted_total,
+    "Loyalty Discounted Total": loyalty_discount.applyLoyaltyDiscount(order.subtotal, 100),
+    "Bulk Discounted Total": bulk_discounted_total,
+    "Invoice Total": invoice.getTotal(),
+}
+
+print(test_summary)
